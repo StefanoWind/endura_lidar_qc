@@ -28,8 +28,8 @@ if len(sys.argv)==1:
     max_time_diff=2#[s] maximum time gap
 else:
     path_config=sys.argv[1]
-    time_step=sys.argv[2]
-    max_time_diff=sys.argv[3]
+    time_step=np.float64(sys.argv[2])
+    max_time_diff=np.float64(sys.argv[3])
 
 range_sel=np.array([100,500,1000])#[m]
 
