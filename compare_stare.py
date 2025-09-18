@@ -91,7 +91,7 @@ os.makedirs(os.path.join(cd,'figures'),exist_ok=True)
 
 #%% Main
 for s in config['lidars']:
-    files=glob.glob(config['sources'][s])
+    files=sorted(glob.glob(config['sources'][s]))
     rws_all[s]=xr.DataArray()
     for f in files:
         Data=xr.open_dataset(f)
@@ -143,7 +143,7 @@ for r in range_sel:
                 else:
                     cax=None
                     bar_done=True
-                plot_lin_fit(rws1.sel(range=r), rws2.sel(range=r),ax=ax,cax=cax,legend=(i1==0)*(i2==0),limits=[0,500])
+                plot_lin_fit(rws1.sel(range=r).values, rws2.sel(range=r).values,ax=ax,cax=cax,legend=(i1==0)*(i2==0),limits=[0,500])
             else:
                 i2+=1
                 continue
