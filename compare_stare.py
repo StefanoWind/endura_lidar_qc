@@ -159,13 +159,13 @@ for r in range_sel:
             ax.grid(True)
             
             ax=fig2.add_subplot(gs2[i1,i2])
-            plt.plot(rws1.sel(range=r),'.k',label=f'Lidar {s1}',markersize=2)
-            plt.plot(rws2.sel(range=r),'.r',label=f'Lidar {s2}',markersize=2)
+            plt.plot(rws1.time,rws1.sel(range=r),'.k',label=f'Lidar {s1}',markersize=2)
+            plt.plot(rws2.time,rws2.sel(range=r),'.r',label=f'Lidar {s2}',markersize=2)
             ax.set_xlabel('Time (UTC)')
             ax.set_ylabel(r'RWS [m s$^{-1}$]')
-            ax.xaxis.set_major_formatter(mdates.DateFormatter('%m:%d'))
-            if i1==0 and i2==0:
-                plt.legend()
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
+            plt.xticks(rotation=45)  
+            plt.legend()
             i2+=1
         i1+=1
     
