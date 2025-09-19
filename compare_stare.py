@@ -11,6 +11,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 import glob
 from matplotlib.gridspec import GridSpec
+import matplotlib.dates as mdates
 import warnings
 import yaml
 warnings.filterwarnings('ignore')
@@ -78,7 +79,7 @@ def plot_lin_fit(x, y, bins=50, cmap='Greys',ax=None,cax=None,legend=True,limits
             bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
     ax.set_aspect("equal")
     if legend:
-        plt.legend(draggable=True)
+        ax.legend(draggable=True)
 
 #%% Initialization
 #configs
@@ -127,19 +128,22 @@ plt.close('all')
 
 for r in range_sel:
     bar_done=False
-    fig=plt.figure(figsize=(16,10))
-    gs = GridSpec(nrows=len(config['lidars'])-1, ncols=len(config['lidars']), width_ratios=[6]*(len(config['lidars'])-1)+[0.5], figure=fig)
+    fig1=plt.figure(figsize=(16,10))
+    gs1 = GridSpec(nrows=len(config['lidars'])-1, ncols=len(config['lidars']), width_ratios=[6]*(len(config['lidars'])-1)+[0.5], figure=fig1)
+    
+    fig2=plt.figure(figsize=(16,10))
+    gs2 = GridSpec(nrows=len(config['lidars'])-1, ncols=len(config['lidars']), width_ratios=[6]*(len(config['lidars'])-1)+[0.5], figure=fig2)
+    
     i1=0
     for s1 in config['lidars']:
         i2=i1
         for s2 in config['lidars'][i1+1:]:
             
             rws1,rws2=xr.align(rws_all[s1],rws_all[s2])
-
-            ax=fig.add_subplot(gs[i1,i2])
             if np.sum(~np.isnan(rws1.sel(range=r)+rws1.sel(range=r)))>0:
+                ax=fig1.add_subplot(gs1[i1,i2])
                 if bar_done==False:
-                    cax=fig.add_subplot(gs[:,-1])
+                    cax=fig1.add_subplot(gs1[:,-1])
                 else:
                     cax=None
                     bar_done=True
@@ -147,17 +151,32 @@ for r in range_sel:
             else:
                 i2+=1
                 continue
+            
             ax.set_xlabel(f'RWS (Lidar {s1}) '+r'[m s$^{-1}$]')
             ax.set_ylabel(f'RWS (Lidar {s2}) '+r'[m s$^{-1}$]')
             ax.set_xlim([-2,2])
             ax.set_ylim([-2,2])
             ax.grid(True)
             
+            ax=fig2.add_subplot(gs2[i1,i2])
+            plt.plot(rws1.sel(range=r),'.k',label=f'Lidar {s1}',markersize=2)
+            plt.plot(rws2.sel(range=r),'.r',label=f'Lidar {s2}',markersize=2)
+            ax.set_xlabel('Time (UTC)')
+            ax.set_ylabel(r'RWS [m s$^{-1}$]')
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%m:%d'))
+            if i1==0 and i2==0:
+                plt.legend()
             i2+=1
         i1+=1
     
+    plt.figure(fig1)
     plt.tight_layout()
     plt.savefig(os.path.join(cd,'figures',f'{r}_stares_linfit.png'))
+    plt.close()
+    
+    plt.figure(fig2)
+    plt.tight_layout()
+    plt.savefig(os.path.join(cd,'figures',f'{r}_stares_series.png'))
     plt.close()
         
     
