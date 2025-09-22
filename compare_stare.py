@@ -33,6 +33,7 @@ else:
     max_time_diff=int(sys.argv[3])
 
 range_sel=np.array([100,500,1000])#[m]
+max_w=5
 
 #%% Functions
 def plot_lin_fit(x, y, bins=50, cmap='Greys',ax=None,cax=None,legend=True,limits=None):
@@ -79,7 +80,7 @@ def plot_lin_fit(x, y, bins=50, cmap='Greys',ax=None,cax=None,legend=True,limits
             bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
     ax.set_aspect("equal")
     if legend:
-        ax.legend(draggable=True)
+        ax.legend(draggable=True,loc="lower right")
 
 #%% Initialization
 #configs
@@ -128,10 +129,10 @@ plt.close('all')
 
 for r in range_sel:
     bar_done=False
-    fig1=plt.figure(figsize=(16,10))
+    fig1=plt.figure(figsize=(12,10))
     gs1 = GridSpec(nrows=len(config['lidars'])-1, ncols=len(config['lidars']), width_ratios=[6]*(len(config['lidars'])-1)+[0.5], figure=fig1)
     
-    fig2=plt.figure(figsize=(16,10))
+    fig2=plt.figure(figsize=(12,10))
     gs2 = GridSpec(nrows=len(config['lidars'])-1, ncols=len(config['lidars']), width_ratios=[6]*(len(config['lidars'])-1)+[0.5], figure=fig2)
     
     i1=0
@@ -140,6 +141,10 @@ for r in range_sel:
         for s2 in config['lidars'][i1+1:]:
             
             rws1,rws2=xr.align(rws_all[s1],rws_all[s2])
+            
+            rws1=rws1.where(np.abs(rws1)<max_w)
+            rws2=rws2.where(np.abs(rws2)<max_w)
+            
             if np.sum(~np.isnan(rws1.sel(range=r)+rws1.sel(range=r)))>0:
                 ax=fig1.add_subplot(gs1[i1,i2])
                 if bar_done==False:
@@ -147,7 +152,7 @@ for r in range_sel:
                 else:
                     cax=None
                     bar_done=True
-                plot_lin_fit(rws1.sel(range=r).values, rws2.sel(range=r).values,ax=ax,cax=cax,legend=(i1==0)*(i2==0),limits=[0,500])
+                plot_lin_fit(rws1.sel(range=r).values, rws2.sel(range=r).values,ax=ax,cax=cax,legend=(i1==0)*(i2==0),limits=[0,100])
             else:
                 i2+=1
                 continue
