@@ -152,7 +152,7 @@ for r in range_sel:
                 else:
                     cax=None
                     bar_done=True
-                plot_lin_fit(rws1.sel(range=r).values, rws2.sel(range=r).values,ax=ax,cax=cax,legend=(i1==0)*(i2==0),limits=[0,100])
+                plot_lin_fit(rws1.sel(range=r).values, rws2.sel(range=r).values,ax=ax,cax=cax,legend=(i1==0)*(i2==0),limits=[0,500])
             else:
                 i2+=1
                 continue
